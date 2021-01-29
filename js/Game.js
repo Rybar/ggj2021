@@ -1,3 +1,5 @@
+//import * as Phaser from './lib/phaser.js'
+
 export default class MainGame extends Phaser.Scene{
     constructor(){
         super('Game');
@@ -7,25 +9,31 @@ export default class MainGame extends Phaser.Scene{
     preload(){
         this.load.setPath('assets/img');
         this.load.image('tiles', 'tilesheet.png');
+        
+        this.load.tilemapTiledJSON("map", "../maps/map00.json");
     }
 
     create(){
         this.score = 0;
         
 
-        const level = [];
-        for(let i = 600; i > 0; i--){
-            var row = []
-            for(let j = 600; j > 0; j--){
-             row.push(Math.floor(Math.random()*4));   
-            }
-            level.push(row);
-        }
+        
         
           // When loading from an array, make sure to specify the tileWidth and tileHeight
-        const map = this.make.tilemap({ data: level, tileWidth: 16, tileHeight: 16 });
-        const tiles = map.addTilesetImage("tiles");
-        const layer = map.createLayer(0, tiles, 0, 0);
+        const map = this.make.tilemap({ key: "map" });
+        const tiles = map.addTilesetImage("tiles", "tiles");
+        const belowLayer = map.createLayer("Below", tiles, 0, 0);
+        const worldLayer = map.createLayer("World", tiles, 0, 0);
+        const aboveLayer = map.createLayer("Above", tiles, 0, 0);
+        worldLayer.setCollisionByProperty({ collides: true });
+
+        //debug collide fill
+        const debugGraphics = this.add.graphics().setAlpha(0.75);
+        worldLayer.renderDebug(debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+        });
 
         this.add.image(700,300, 'logo');
         
