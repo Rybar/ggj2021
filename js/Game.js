@@ -37,11 +37,7 @@ export default class MainGame extends Phaser.Scene{
         faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });
 
-        // this.player = this.physics.add
-        //     .sprite(spawnPoint.x, spawnPoint.y, "player",)
-        //     //.setOffset(0, 24);
-        //     this.physics.add.collider(this.player, worldLayer);
-
+        //player 
         this.player = new Player(this, spawnPoint.x, spawnPoint.y);
         this.physics.world.addCollider(this.player.sprite, this.worldLayer);
 
@@ -49,7 +45,6 @@ export default class MainGame extends Phaser.Scene{
 
         this.cameras.main.startFollow(this.player.sprite);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        this.cursors = this.input.keyboard.createCursorKeys();
 
     }
 
