@@ -1,4 +1,4 @@
-//import * as Phaser from './lib/phaser.js'
+import Player from './Player.js'
 
 export default class MainGame extends Phaser.Scene{
     constructor(){
@@ -9,23 +9,25 @@ export default class MainGame extends Phaser.Scene{
     preload(){
         this.load.setPath('assets/img');
         this.load.image('tiles', 'tilesheet.png');
-        
+        this.load.image('player', 'guy.png');
         this.load.tilemapTiledJSON("map", "../maps/map00.json");
     }
 
     create(){
         this.score = 0;
         
-
-        
-        
-          // When loading from an array, make sure to specify the tileWidth and tileHeight
         const map = this.make.tilemap({ key: "map" });
         const tiles = map.addTilesetImage("tiles", "tiles");
         const belowLayer = map.createLayer("Below", tiles, 0, 0);
+
         const worldLayer = map.createLayer("World", tiles, 0, 0);
-        const aboveLayer = map.createLayer("Above", tiles, 0, 0);
         worldLayer.setCollisionByProperty({ collides: true });
+        
+
+        const aboveLayer = map.createLayer("Above", tiles, 0, 0).setScrollFactor(1.1);
+        aboveLayer.setDepth(10);
+
+        const spawnPoint = map.findObject("Objects", obj => obj.name === "spawn");
 
         //debug collide fill
         const debugGraphics = this.add.graphics().setAlpha(0.75);
@@ -35,39 +37,24 @@ export default class MainGame extends Phaser.Scene{
         faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });
 
+        // this.player = this.physics.add
+        //     .sprite(spawnPoint.x, spawnPoint.y, "player",)
+        //     //.setOffset(0, 24);
+        //     this.physics.add.collider(this.player, worldLayer);
+
+        this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+        this.physics.world.addCollider(this.player.sprite, this.worldLayer);
+
         this.add.image(700,300, 'logo');
-        
 
-        var particles = this.add.particles('yellow');
+        this.cameras.main.startFollow(this.player.sprite);
+        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.cameras.main.setBounds(0, 0, 10000,10000);
-        const cursors = this.input.keyboard.createCursorKeys();
-
-        const controlConfig = {
-            camera: this.cameras.main,
-            left: cursors.left,
-            right: cursors.right,
-            up: cursors.up,
-            down: cursors.down,
-            speed: 0.5
-        };
-        this.controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
-
-        var emitter = particles.createEmitter({
-            speed:100,
-            scale: { start:0.1, end:0},
-            blendMode: 'ADD'
-        });
-
-        
-
-        this.input.on('pointermove', (pointer)=>{
-            emitter.startFollow(pointer);
-        })
     }
 
     update (time, delta)
     {
-        this.controls.update(delta);
+        this.player.update();
     }
 }
