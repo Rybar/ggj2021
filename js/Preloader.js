@@ -9,13 +9,15 @@ export default class Preloader extends Phaser.Scene {
         this.load.image('yellow', 'yellow.png');
 
         this.add.image(400,300, 'logo');
+        
     }
 
     create(){
         this.add
-        .text(150, 100, "Empty Game\nClick To Start", {
-        font: "30px monospace",
-        color: "#999999"
+        .text(160, 50, "Where's Bailey?\nClick To Start", {
+        font: "30px vt323regular",
+        align: "center",
+        color: "#ffaa33"
         })
         .setOrigin(0.5, 0.5)
         .setShadow(1, 2, "#0000000", 0, true, true);
